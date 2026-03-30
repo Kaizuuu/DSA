@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Group 3 DSA</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-logo">
+        DSA<span class="dot"></span>Group 3
+    </a>
+    <div class="nav-search">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search topics, algorithms..."/>
+    </div>
+    <div class="nav-actions">
+        <span class="nav-count"><span id="topic-count" th:text="${topics.size()}"></span> topics</span>
+    </div>
+</nav>
+
+<!-- HERO -->
+<main>
+    <section class="hero">
+        <div class="hero-eyebrow">Interactive Learning Platform</div>
+        <h1>Master <span class="highlight">Data Structures</span><br/>& Algorithms</h1>
+        <p>Visual, bite-sized video lessons designed to make complex data structure and algorithm concepts click for every learner.</p>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-value" th:text="${topics.size()}">18</span>
+                <span class="stat-label">Topics</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" th:text="${groupedTopics.size()}">4</span>
+                <span class="stat-label">Categories</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">100%</span>
+                <span class="stat-label">Free</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Topics</button>
+        <button class="filter-btn" data-filter="Data Structures">Data Structures</button>
+        <button class="filter-btn" data-filter="Sorting">Sorting</button>
+        <button class="filter-btn" data-filter="Searching">Searching</button>
+        <button class="filter-btn" data-filter="Graph Theory">Graph Theory</button>
+    </div>
+
+    <!-- SECTIONS BY CATEGORY -->
+    <div th:each="entry : ${groupedTopics}" class="category-section">
+        <div class="section-header">
+            <h2 class="section-title" th:text="${entry.key}">Category</h2>
+            <div class="section-line"></div>
+            <span class="section-count" th:text="${entry.value.size()}">0</span>
+        </div>
+
+        <div class="topics-grid">
+            <a th:each="topic, iterStat : ${entry.value}"
+               href="#"
+               class="topic-card"
+               th:data-title="${topic.title}"
+               th:data-category="${topic.category}"
+               th:data-desc="${topic.description}"
+               th:data-video="${topic.videoFile}"
+               th:data-tags="${#strings.arrayJoin(topic.tags, ',')}"
+               th:style="'animation-delay:' + ${iterStat.index * 60} + 'ms'">
+
+                <!-- Thumbnail -->
+                <div class="card-thumb">
+                    <div class="card-thumb-bg"
+                         th:classappend="${topic.category == 'Sorting'} ? 'cat-sorting' : (${topic.category == 'Searching'} ? 'cat-searching' : (${topic.category == 'Graph Theory'} ? 'cat-graph' : 'cat-data'))"
+                         th:style="'background: linear-gradient(135deg, ' + ${topic.thumbnailColor} + ', ' + ${topic.thumbnailColor} + 'dd)'">
+                        <span th:text="${topic.icon}">📋</span>
+                    </div>
+                    <div class="card-thumb-overlay"></div>
+                    <div class="play-btn">
+                        <div class="play-icon">
+                            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                    </div>
+                    <span class="card-category-badge" th:text="${topic.category}">Category</span>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body">
+                    <div class="card-title" th:text="${topic.title}">Title</div>
+                    <div class="card-desc" th:text="${topic.description}">Description</div>
+                    <div class="card-tags">
+                        <span class="tag" th:each="tag : ${topic.tags}" th:text="${tag}">tag</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <video class="modal-video" id="modal-video" controls></video>
+        <div class="modal-body">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Title</h2>
+                <button class="modal-close" id="modal-close">✕</button>
+            </div>
+            <p class="modal-desc" id="modal-desc">Description</p>
+            <div class="modal-tags" id="modal-tags"></div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Copyrights Group 3 DSA</p>
+</footer>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
