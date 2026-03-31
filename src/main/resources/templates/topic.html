@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${topic.title} + ' — DSA Group 3'">Topic — DSA Group 3</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <link rel="stylesheet" th:href="@{/css/topic.css}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body class="topic-page">
+
+<nav>
+  <a href="/" class="nav-logo">DSA<span class="dot">·</span>Group 3</a>
+  <div class="nav-search">
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="Search topics..." onkeydown="if(event.key==='Enter')window.location.href='/?q='+this.value"/>
+  </div>
+  <div class="nav-actions">
+    <a href="/" class="nav-back-btn">Back to Topics</a>
+  </div>
+</nav>
+
+<main class="topic-main">
+
+  <nav class="breadcrumb">
+    <a href="/" class="breadcrumb-link">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a th:href="@{'/?filter=' + ${topic.category}}" class="breadcrumb-link" th:text="${topic.category}">Category</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current" th:text="${topic.title}">Topic</span>
+  </nav>
+
+  <div class="topic-hero">
+    <div class="topic-hero-icon"
+         th:style="'background: linear-gradient(135deg,' + ${topic.thumbnailColor} + ',' + ${topic.thumbnailColor} + 'aa)'"
+         th:text="${topic.icon}">📋</div>
+    <div class="topic-hero-text">
+      <div class="topic-category-chip" th:text="${topic.category}">Category</div>
+      <h1 class="topic-title" th:text="${topic.title}">Topic Title</h1>
+      <p class="topic-desc" th:text="${topic.description}">Description</p>
+      <div class="topic-tags">
+        <span class="tag" th:each="tag : ${topic.tags}" th:text="${tag}">tag</span>
+      </div>
+    </div>
+    <div class="topic-watch-status" id="watch-status-badge">
+      <span class="watch-icon">&#9654;</span>
+      <span class="watch-label">Mark as Watched</span>
+    </div>
+  </div>
+
+  <div class="video-wrapper" th:if="${topic.videoFile != null}">
+    <video class="topic-video" id="topic-video" controls
+           th:data-id="${topic.id}"
+           th:data-title="${topic.title}"
+           th:data-icon="${topic.icon}"
+           th:data-color="${topic.thumbnailColor}"
+           th:data-category="${topic.category}"
+           th:data-desc="${topic.description}">
+      <source th:src="@{'/videos/' + ${topic.videoFile}}" type="video/mp4"/>
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="section-block" th:if="${topic.hasVisualizer}">
+    <div class="section-block-header">
+      <span class="section-block-icon">🎮</span>
+      <h2 class="section-block-title">Interactive Visualizer</h2>
+      <span class="section-block-badge">Try it</span>
+    </div>
+    <div class="visualizer-container" th:id="'viz-' + ${topic.id}"></div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-block-header">
+      <span class="section-block-icon">&#9201;</span>
+      <h2 class="section-block-title">Time and Space Complexity</h2>
+    </div>
+    <div class="complexity-table-wrap">
+      <table class="complexity-table">
+        <thead>
+        <tr>
+          <th>Case</th>
+          <th>Time Complexity</th>
+          <th>Notes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><span class="case-badge best">Best</span></td>
+          <td><code class="complexity-code green" th:text="${topic.complexityBest}">O(n)</code></td>
+          <td class="complexity-note" th:text="${topic.complexityBestNote}">Already sorted</td>
+        </tr>
+        <tr>
+          <td><span class="case-badge avg">Average</span></td>
+          <td><code class="complexity-code yellow" th:text="${topic.complexityAvg}">O(n)</code></td>
+          <td class="complexity-note" th:text="${topic.complexityAvgNote}">Random order</td>
+        </tr>
+        <tr>
+          <td><span class="case-badge worst">Worst</span></td>
+          <td><code class="complexity-code red" th:text="${topic.complexityWorst}">O(n)</code></td>
+          <td class="complexity-note" th:text="${topic.complexityWorstNote}">Reverse sorted</td>
+        </tr>
+        <tr>
+          <td><span class="case-badge space">Space</span></td>
+          <td><code class="complexity-code blue" th:text="${topic.spaceComplexity}">O(1)</code></td>
+          <td class="complexity-note" th:text="${topic.spaceNote}">In-place</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-block-header">
+      <span class="section-block-icon">📝</span>
+      <h2 class="section-block-title">Pseudocode</h2>
+      <button class="copy-btn" onclick="copyPseudo(this)">Copy</button>
+    </div>
+    <pre class="pseudocode-block" th:id="'pseudo-' + ${topic.id}"><code th:text="${topic.pseudocode}">pseudocode here</code></pre>
+  </div>
+
+  <div class="section-block">
+    <div class="section-block-header">
+      <span class="section-block-icon">🐍</span>
+      <h2 class="section-block-title">Python Implementation</h2>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+    </div>
+    <pre class="code-block python"><code th:text="${topic.pythonCode}">code here</code></pre>
+  </div>
+
+  <div class="section-block">
+    <div class="section-block-header">
+      <span class="section-block-icon">🌍</span>
+      <h2 class="section-block-title">Real-World Use Cases</h2>
+    </div>
+    <div class="use-cases-grid">
+      <div class="use-case-card" th:each="uc : ${topic.useCases}">
+        <div class="use-case-emoji" th:text="${uc.emoji}">🔧</div>
+        <div class="use-case-text">
+          <div class="use-case-title" th:text="${uc.title}">Title</div>
+          <div class="use-case-desc" th:text="${uc.desc}">Description</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-block-header">
+      <span class="section-block-icon">💼</span>
+      <h2 class="section-block-title">Common Interview Questions</h2>
+    </div>
+    <div class="interview-questions">
+      <div class="iq-item" th:each="q, qStat : ${topic.interviewQuestions}">
+        <div class="iq-number" th:text="${qStat.index + 1}">1</div>
+        <div class="iq-question" th:text="${q}">Question?</div>
+        <div class="iq-difficulty-badge"
+             th:text="${topic.questionDifficulties[qStat.index]}"
+             th:classappend="'diff-' + ${topic.questionDifficulties[qStat.index].toLowerCase()}">Easy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic-nav-footer">
+    <a class="topic-nav-btn prev"
+       th:href="${prevTopic != null} ? @{/topic/{id}(id=${prevTopic.id})} : '#'"
+       th:classappend="${prevTopic == null} ? ' disabled' : ''">
+      <div class="nav-btn-arrow">&#8592;</div>
+      <div class="nav-btn-content">
+        <div class="nav-btn-label">Previous</div>
+        <div class="nav-btn-title" th:text="${prevTopic != null} ? ${prevTopic.title} : 'None'">Prev</div>
+      </div>
+    </a>
+    <a href="/" class="topic-nav-home">All Topics</a>
+    <a class="topic-nav-btn next"
+       th:href="${nextTopic != null} ? @{/topic/{id}(id=${nextTopic.id})} : '#'"
+       th:classappend="${nextTopic == null} ? ' disabled' : ''">
+      <div class="nav-btn-content" style="text-align:right;">
+        <div class="nav-btn-label">Next</div>
+        <div class="nav-btn-title" th:text="${nextTopic != null} ? ${nextTopic.title} : 'None'">Next</div>
+      </div>
+      <div class="nav-btn-arrow">&#8594;</div>
+    </a>
+  </div>
+
+  <div class="section-block" th:if="${!related.isEmpty()}">
+    <div class="section-block-header">
+      <span class="section-block-icon">🔗</span>
+      <h2 class="section-block-title">Related Topics</h2>
+    </div>
+    <div class="related-grid">
+      <a th:each="rel : ${related}"
+         th:href="@{/topic/{id}(id=${rel.id})}"
+         class="related-card"
+         th:data-id="${rel.id}">
+        <span class="related-icon" th:text="${rel.icon}">📋</span>
+        <div class="related-info">
+          <div class="related-title" th:text="${rel.title}">Title</div>
+          <div class="related-cat" th:text="${rel.category}">Cat</div>
+        </div>
+        <span class="related-watched-mark" style="display:none;">✓</span>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Copyrights Group 3 DSA</p>
+</footer>
+
+<script th:src="@{/js/progress.js}"></script>
+<script th:src="@{/js/topic.js}"></script>
+<script th:src="@{/js/visualizer.js}"></script>
+</body>
+</html>

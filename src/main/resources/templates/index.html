@@ -7,13 +7,14 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
     <a href="/" class="nav-logo">
-        DSA<span class="dot"></span>Group 3
+        DSA<span class="dot">·</span>Group 3
     </a>
     <div class="nav-search">
         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -26,8 +27,8 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <main>
+    <!-- HERO -->
     <section class="hero">
         <div class="hero-eyebrow">Interactive Learning Platform</div>
         <h1>Master <span class="highlight">Data Structures</span><br/>& Algorithms</h1>
@@ -42,23 +43,40 @@
                 <span class="stat-label">Categories</span>
             </div>
             <div class="stat">
-                <span class="stat-value">100%</span>
-                <span class="stat-label">Free</span>
+                <span class="stat-value" id="progress-stat">0%</span>
+                <span class="stat-label">Completed</span>
             </div>
         </div>
     </section>
 
+    <!-- RECENTLY VIEWED (populated by JS) -->
+    <div id="recently-viewed-section" class="recently-viewed-section" style="display:none;">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="section-icon">🕐</span> Recently Viewed
+            </h2>
+            <div class="section-line"></div>
+            <button class="clear-recent-btn" id="clear-recent">Clear</button>
+        </div>
+        <div class="recent-scroll-track">
+            <div class="recent-cards-row" id="recent-cards-row"></div>
+        </div>
+    </div>
+
     <!-- FILTER BAR -->
     <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">All Topics</button>
-        <button class="filter-btn" data-filter="Data Structures">Data Structures</button>
-        <button class="filter-btn" data-filter="Sorting">Sorting</button>
-        <button class="filter-btn" data-filter="Searching">Searching</button>
-        <button class="filter-btn" data-filter="Graph Theory">Graph Theory</button>
+        <button class="filter-btn" th:each="cat : ${categories}" th:data-filter="${cat}" th:text="${cat}">Category</button>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-track-bar">
+        <div class="progress-track-fill" id="progress-track-fill"></div>
+        <span class="progress-track-label" id="progress-track-label">0 / <span th:text="${topics.size()}">18</span> topics watched</span>
     </div>
 
     <!-- SECTIONS BY CATEGORY -->
-    <div th:each="entry : ${groupedTopics}" class="category-section">
+    <div th:each="entry : ${groupedTopics}" class="category-section" th:data-category="${entry.key}">
         <div class="section-header">
             <h2 class="section-title" th:text="${entry.key}">Category</h2>
             <div class="section-line"></div>
@@ -67,14 +85,23 @@
 
         <div class="topics-grid">
             <a th:each="topic, iterStat : ${entry.value}"
-               href="#"
+               th:href="@{/topic/{id}(id=${topic.id})}"
                class="topic-card"
+               th:data-id="${topic.id}"
                th:data-title="${topic.title}"
                th:data-category="${topic.category}"
                th:data-desc="${topic.description}"
                th:data-video="${topic.videoFile}"
                th:data-tags="${#strings.arrayJoin(topic.tags, ',')}"
+               th:data-icon="${topic.icon}"
+               th:data-color="${topic.thumbnailColor}"
                th:style="'animation-delay:' + ${iterStat.index * 60} + 'ms'">
+
+                <!-- Watched badge -->
+                <div class="watched-badge" style="display:none;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    Watched
+                </div>
 
                 <!-- Thumbnail -->
                 <div class="card-thumb">
@@ -105,25 +132,11 @@
     </div>
 </main>
 
-<!-- VIDEO MODAL -->
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-        <video class="modal-video" id="modal-video" controls></video>
-        <div class="modal-body">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modal-title">Title</h2>
-                <button class="modal-close" id="modal-close">✕</button>
-            </div>
-            <p class="modal-desc" id="modal-desc">Description</p>
-            <div class="modal-tags" id="modal-tags"></div>
-        </div>
-    </div>
-</div>
-
 <footer>
     <p>Copyrights Group 3 DSA</p>
 </footer>
 
+<script th:src="@{/js/progress.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
